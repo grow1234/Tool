@@ -518,17 +518,13 @@
             <div class="ad-title"><i class="fas fa-ad"></i> Advertisement</div>
             <div class="ad-placeholder">
                 <!-- Google AdSense Ad Unit -->
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script>
-                <!-- Image Compression Tool - Leaderboard -->
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-YOUR_ADSENSE_ID"
-                     data-ad-slot="YOUR_AD_SLOT_ID"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-                <script>
-                     (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
+                <!-- Replace with your actual AdSense code -->
+                <div style="background: #f0f0f0; padding: 20px; text-align: center; border-radius: 8px;">
+                    <p style="color: #666; margin-bottom: 10px;">Advertisement</p>
+                    <div style="background: #e0e0e0; height: 100px; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                        <p style="color: #999;">AdSense Ad</p>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -623,4 +619,244 @@
                     <i class="fas fa-download"></i> Download Compressed Image
                 </button>
             </div>
+        </div>
+        
+        <div class="ad-container">
+            <div class="ad-title"><i class="fas fa-ad"></i> Advertisement</div>
+            <div class="ad-placeholder">
+                <!-- Google AdSense Ad Unit -->
+                <!-- Replace with your actual AdSense code -->
+                <div style="background: #f0f0f0; padding: 20px; text-align: center; border-radius: 8px;">
+                    <p style="color: #666; margin-bottom: 10px;">Advertisement</p>
+                    <div style="background: #e0e0e0; height: 100px; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                        <p style="color: #999;">AdSense Ad</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>ImageCompress Pro &copy; 2023 | All Rights Reserved</p>
+            <p>This tool processes your images entirely in your browser - no images are uploaded to any server.</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const fileInput = document.getElementById('file-input');
+            const dropArea = document.getElementById('drop-area');
+            const compressionLevel = document.getElementById('compression-level');
+            const compressionValue = document.getElementById('compression-value');
+            const imageQuality = document.getElementById('image-quality');
+            const qualityValue = document.getElementById('quality-value');
+            const maxWidth = document.getElementById('max-width');
+            const widthValue = document.getElementById('width-value');
+            const compressBtn = document.getElementById('compress-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const originalContainer = document.getElementById('original-container');
+            const compressedContainer = document.getElementById('compressed-container');
+            const originalInfo = document.getElementById('original-info');
+            const compressedInfo = document.getElementById('compressed-info');
+            const compressionRatio = document.getElementById('compression-ratio');
+            const sizeSaving = document.getElementById('size-saving');
+            const timeSaving = document.getElementById('time-saving');
+            const compressionProgress = document.getElementById('compression-progress');
+            const loading = document.getElementById('loading');
             
+            let originalImage = null;
+            let compressedImageBlob = null;
+            let originalSize = 0;
+            
+            // Update slider values
+            compressionLevel.addEventListener('input', function() {
+                compressionValue.textContent = this.value + '%';
+            });
+            
+            imageQuality.addEventListener('input', function() {
+                qualityValue.textContent = this.value + '%';
+            });
+            
+            maxWidth.addEventListener('input', function() {
+                widthValue.textContent = this.value + 'px';
+            });
+            
+            // File upload handling
+            dropArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length) {
+                    handleImageUpload(e.target.files[0]);
+                }
+            });
+            
+            // Drag and drop handling
+            dropArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropArea.style.background = '#e9ecef';
+                dropArea.style.borderColor = '#4361ee';
+            });
+            
+            dropArea.addEventListener('dragleave', function() {
+                dropArea.style.background = '#f8f9fa';
+                dropArea.style.borderColor = '#4361ee';
+            });
+            
+            dropArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropArea.style.background = '#f8f9fa';
+                dropArea.style.borderColor = '#4361ee';
+                
+                if (e.dataTransfer.files.length) {
+                    handleImageUpload(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // Handle image upload
+            function handleImageUpload(file) {
+                if (!file.type.match('image.*')) {
+                    alert('Please upload an image file.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    originalImage = new Image();
+                    originalImage.onload = function() {
+                        // Display original image
+                        originalContainer.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.maxWidth = '100%';
+                        img.style.maxHeight = '100%';
+                        originalContainer.appendChild(img);
+                        
+                        // Update original image info
+                        originalSize = file.size;
+                        const sizeInKB = (file.size / 1024).toFixed(2);
+                        originalInfo.textContent = `Size: ${sizeInKB} KB | Dimensions: ${originalImage.width}x${originalImage.height}`;
+                    };
+                    originalImage.src = e.target.result;
+                };
+                
+                reader.readAsDataURL(file);
+                
+                // Reset compressed image
+                compressedContainer.innerHTML = '<p>Compressed image will appear here</p>';
+                compressedInfo.textContent = 'Size: 0 KB';
+                compressionRatio.textContent = '0%';
+                sizeSaving.textContent = '0 KB';
+                timeSaving.textContent = '0s';
+                compressionProgress.style.width = '0%';
+                downloadBtn.disabled = true;
+                compressedImageBlob = null;
+            }
+            
+            // Compress image
+            compressBtn.addEventListener('click', function() {
+                if (!originalImage) {
+                    alert('Please upload an image first.');
+                    return;
+                }
+                
+                // Show loading animation
+                loading.style.display = 'block';
+                compressBtn.disabled = true;
+                
+                const quality = parseInt(imageQuality.value) / 100;
+                const maxWidthValue = parseInt(maxWidth.value);
+                
+                // Simulate progress for better UX
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 5;
+                    compressionProgress.style.width = progress + '%';
+                    if (progress >= 100) clearInterval(progressInterval);
+                }, 100);
+                
+                // Create a canvas for image manipulation
+                setTimeout(() => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Calculate new dimensions
+                    let width = originalImage.width;
+                    let height = originalImage.height;
+                    
+                    if (width > maxWidthValue) {
+                        height = (height * maxWidthValue) / width;
+                        width = maxWidthValue;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // Draw image on canvas
+                    ctx.drawImage(originalImage, 0, 0, width, height);
+                    
+                    // Get compressed image as data URL
+                    const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    
+                    // Convert to blob for size calculation
+                    fetch(dataUrl)
+                        .then(res => res.blob())
+                        .then(blob => {
+                            compressedImageBlob = blob;
+                            
+                            // Display compressed image
+                            compressedContainer.innerHTML = '';
+                            const img = document.createElement('img');
+                            img.src = URL.createObjectURL(blob);
+                            img.style.maxWidth = '100%';
+                            img.style.maxHeight = '100%';
+                            compressedContainer.appendChild(img);
+                            
+                            // Update compressed image info
+                            const compressedSize = blob.size;
+                            const sizeInKB = (compressedSize / 1024).toFixed(2);
+                            compressedInfo.textContent = `Size: ${sizeInKB} KB | Dimensions: ${width}x${height}`;
+                            
+                            // Calculate compression stats
+                            const savedSize = (originalSize - compressedSize) / 1024;
+                            const ratio = (100 - (compressedSize / originalSize * 100)).toFixed(2);
+                            
+                            compressionRatio.textContent = `${ratio}%`;
+                            sizeSaving.textContent = `${savedSize.toFixed(2)} KB`;
+                            timeSaving.textContent = `${(savedSize / 100).toFixed(1)}s`;
+                            
+                            // Enable download button
+                            downloadBtn.disabled = false;
+                            
+                            // Hide loading animation
+                            loading.style.display = 'none';
+                            compressBtn.disabled = false;
+                        })
+                        .catch(error => {
+                            console.error('Error compressing image:', error);
+                            alert('Error compressing image. Please try again.');
+                            loading.style.display = 'none';
+                            compressBtn.disabled = false;
+                        });
+                }, 800);
+            });
+            
+            // Download compressed image
+            downloadBtn.addEventListener('click', function() {
+                if (!compressedImageBlob) return;
+                
+                const url = URL.createObjectURL(compressedImageBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'compressed-image.jpg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        });
+    </script>
+</body>
+</html>
